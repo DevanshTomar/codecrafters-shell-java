@@ -6,7 +6,7 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) throws Exception {
 
-        HashSet<String> builtIn = new HashSet<>(Arrays.asList("echo", "exit", "Type"));
+        HashSet<String> builtIn = new HashSet<>(Arrays.asList("echo", "exit", "type"));
 
         while (true) {
             String[] userInput = IO.readln("$ ").trim().split(" ");
