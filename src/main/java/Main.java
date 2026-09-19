@@ -28,7 +28,7 @@ public class Main {
                     if (builtIn.contains(commandToCheck)) {
                         System.out.println(commandToCheck + " is a shell builtin");
                     } else {
-                        System.out.println(commandToCheck+ ": command not found");
+                        System.out.println(commandToCheck+ ": not found");
                     }
                 }
                 default -> System.out.println(userInput[0] + ": command not found");
