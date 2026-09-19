@@ -1,4 +1,7 @@
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -36,6 +39,7 @@ public class Main {
             if (userInput.length == 0) continue;
 
             String command = userInput[0];
+            final String[] arguments = Arrays.copyOfRange(userInput, 1, userInput.length);
 
             switch (command) {
                 case "exit" -> System.exit(0);
@@ -43,7 +47,7 @@ public class Main {
                     if (userInput.length == 1) {
                         continue;
                     }
-                    String[] strings = Arrays.copyOfRange(userInput, 1, userInput.length);
+                    String[] strings = arguments;
                     System.out.println(String.join(" ", strings));
                 }
                 case "type" -> {
@@ -60,7 +64,28 @@ public class Main {
 
                     }
                 }
-                default -> System.out.println(userInput[0] + ": command not found");
+                default -> {
+                    String executablePath = isExecutableInPath(command);
+                    if (executablePath == null) {
+                        System.out.println(command + ": command not found");
+                        continue;
+                    }
+
+                    try {
+                        String[] fullCommand = new String[arguments.length + 1];
+                        fullCommand[0] = command;
+                        System.arraycopy(arguments, 0, fullCommand, 1, arguments.length);
+
+                        Process process = new ProcessBuilder(fullCommand)
+                                .inheritIO()
+                                .start();
+
+                        process.waitFor();
+
+                    } catch (Exception e) {
+                        System.out.println("Error executing command: " + e.getMessage());
+                    }
+                }
             }
         }
     }
