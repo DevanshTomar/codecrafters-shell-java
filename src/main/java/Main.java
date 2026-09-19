@@ -26,7 +26,7 @@ public class Main {
                 case "type" -> {
                     String commandToCheck = userInput[1];
                     if (builtIn.contains(commandToCheck)) {
-                        System.out.println(commandToCheck + ": is a shell builtin");
+                        System.out.println(commandToCheck + " is a shell builtin");
                     } else {
                         System.out.println(commandToCheck+ ": command not found");
                     }
