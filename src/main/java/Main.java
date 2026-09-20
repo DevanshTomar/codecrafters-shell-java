@@ -32,12 +32,13 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        HashSet<String> builtIn = new HashSet<>(Arrays.asList("echo", "exit", "type"));
+        HashSet<String> builtIn = new HashSet<>(Arrays.asList("echo", "exit", "type", "pwd"));
 
         while (true) {
             String[] userInput = IO.readln("$ ").trim().split(" ");
             if (userInput.length == 0) continue;
 
+            Path currentWorkingDirectory = Paths.get(System.getProperty("user.dir")).toAbsolutePath().normalize();
             String command = userInput[0];
             final String[] arguments = Arrays.copyOfRange(userInput, 1, userInput.length);
 
@@ -50,18 +51,21 @@ public class Main {
                     String[] strings = arguments;
                     System.out.println(String.join(" ", strings));
                 }
+                case "pwd" -> {
+                    System.out.println(currentWorkingDirectory);
+                }
                 case "type" -> {
                     String commandToCheck = userInput[1];
                     if (builtIn.contains(commandToCheck)) {
                         System.out.println(commandToCheck + " is a shell builtin");
                     } else {
                         String executablePath = isExecutableInPath(commandToCheck);
-                        if (executablePath != null) {
-                            System.out.println(commandToCheck + " is " + executablePath);
-                        } else {
+                        if (executablePath == null) {
                             System.out.println(commandToCheck+ ": not found");
+                            continue;
                         }
 
+                        System.out.println(commandToCheck + " is " + executablePath);
                     }
                 }
                 default -> {
