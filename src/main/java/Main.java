@@ -1,14 +1,10 @@
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Scanner;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -39,6 +35,7 @@ public class Main {
             if (userInput.length == 0) continue;
 
             Path currentWorkingDirectory = Paths.get(System.getProperty("user.dir")).toAbsolutePath().normalize();
+
             String command = userInput[0];
             final String[] arguments = Arrays.copyOfRange(userInput, 1, userInput.length);
 
@@ -53,6 +50,25 @@ public class Main {
                 }
                 case "pwd" -> {
                     System.out.println(currentWorkingDirectory);
+                }
+                case "cd" -> {
+                    if (userInput.length == 1) {
+                        System.setProperty("user.dir", System.getProperty("user.home"));
+                        continue;
+                    }
+
+                    try {
+                        String path = arguments[0];
+                        Path newPath = Path.of(path);
+                        Path normalizedPath = newPath.normalize();
+                        if (!Files.exists(normalizedPath) || !Files.isDirectory(normalizedPath)) {
+                            System.out.println("cd: no such file or directory: " + newPath);
+                        } else {
+                            System.setProperty("user.dir", newPath.toString());
+                        }
+                    } catch (InvalidPathException e) {
+                        System.out.println("cd: " + e.getMessage());
+                    }
                 }
                 case "type" -> {
                     String commandToCheck = userInput[1];
@@ -81,6 +97,7 @@ public class Main {
                         System.arraycopy(arguments, 0, fullCommand, 1, arguments.length);
 
                         Process process = new ProcessBuilder(fullCommand)
+                                .directory(currentWorkingDirectory.toFile())
                                 .inheritIO()
                                 .start();
 
